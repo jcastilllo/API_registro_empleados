@@ -29,24 +29,20 @@ def add_empleado():
 @api.route('/empleado/<int:empleado_id>', methods=['GET'])
 def get_empleado(empleado_id):
   empl = Empleado.query.get_or_404(empleado_id)
-  #return product_schema.jsonify(prod)
   return jsonify(empl.to_dict())
 
 # Read many
 @api.route('/empleado/', methods=['GET'])
 def get_empleados():
   all_empleados = Empleado.query.all()
-  #print(all_products)
   result = empleados_schema.dump(all_empleados)
-  #return jsonify(result)
   return jsonify(Empleado.to_list(all_empleados))
 # Update
 @api.route('/empleado/<int:empleado_id>', methods=['PUT'])
 def update_empleado(empleado_id):
   data = request.get_json() or {}
   empl = Empleado.query.get_or_404(empleado_id)
-  empl.from_dict(data) # update
-  #print(data,prod)
+  empl.from_dict(data)
   db.session.commit()
   response = jsonify(empl.to_dict())
   response.headers['Location'] = url_for('api.get_empleado', empleado_id=empl.empleado_id)
@@ -66,10 +62,7 @@ def del_empleado(empleado_id):
 @api.route('/turno/', methods=['POST'])
 def add_turno():
   data = request.get_json() or {}
-  print ("###############  /turno/test77  POST ###########################")
-  print (data)
   tur = Turno().from_dict(data)
-  print (tur)
   db.session.add(tur)
   db.session.commit()
   response = jsonify(tur.to_dict())
@@ -78,7 +71,6 @@ def add_turno():
 # Read one
 @api.route('/turno/<int:t_id>', methods=['GET'])
 def get_turno(t_id):
-  print (t_id)
   tur = Turno.query.get_or_404(t_id)
   return turno_schema.jsonify(tur)
   return jsonify(tur.to_dict())
@@ -86,7 +78,6 @@ def get_turno(t_id):
 @api.route('/turno/', methods=['GET'])
 def get_turnos():
   all_turnos = Turno.query.all()
-  print ("ALL turnos##",all_turnos,"###777#")
   result = turnos_schema.dump(all_turnos)
   return jsonify(result)
   return jsonify(Turno.to_list(all_turnos))
@@ -95,7 +86,6 @@ def get_turnos():
 def update_turno(t_id):
   data = request.get_json() or {}
   tur = Turno.query.get_or_404(t_id)
-  print ("Turno id ####",tur,"#########")
   tur.from_dict(data) # update
   db.session.commit()
   response = jsonify(tur.to_dict())
@@ -111,41 +101,36 @@ def del_turno(t_id):
        'turno':tur.to_dict() }
   response = jsonify(result)
   return response, 200
-### create empleado_turno
+### create empleado_turno turnos busqueda por empleado_id
 @api.route('/turno_empleado/<int:t_id>', methods=['GET'])
 def get_turno_empleado(t_id):
-  print ("#### Turnos asociado al empleado #",t_id)
   empl = Empleado.query.get_or_404(t_id)
-
-  tur = Turno.query.filter(Turno.empleado_id==t_id).all()
-  results = turnos_schema.dump(tur)
-  print ("Tur results###",tur,'###',results)
-  return jsonify(empl.to_dict(),results)#,
+  # tur = Turno.query.filter(Turno.empleado_id==t_id).all()
+  # results = turnos_schema.dump(tur)
+  results = {
+    'empleado':empleado_schema.dump(empl),
+    'turnos':turnos_schema.dump(empl.turnos),
+  }
+  return jsonify(results)
+  # return jsonify(empl.to_dict(),results)#,
 # read turno by hora de inicio
 @api.route('/turno_hora_inicio/<string:h_inicio>', methods=['GET'])
 def get_hora_inicio(h_inicio):
-  print ("#### Turnos que inician a la misma hora #",h_inicio)
   tur = Turno.query.filter(Turno.h_entrada==h_inicio).all()
   results = turnos_schema.dump(tur)
-  print ("Tur results###",tur,'###',results)
   return jsonify(results)
-  # return jsonify({"Prueba":"Hora"})
-# read turno by hora de inicio
+# read turno by hora de salida
 @api.route('/turno_hora_salida/<string:h_final>', methods=['GET'])
 def get_hora_salida(h_final):
-  print ("#### Turnos que finalizan a la misma hora #",h_final)
   tur = Turno.query.filter(Turno.h_salida==h_final).all()
   results = turnos_schema.dump(tur)
-  print ("Tur results###",tur,'###',results)
   return jsonify(results)
 
 # read turnos que tengan la misma fecha
 @api.route('/turno_fecha/<string:fecha_>', methods=['GET'])
 def get_tur_fecha(fecha_):
-  print ("#### Turnos que tienen la misma fecha #",fecha_)
   tur = Turno.query.filter(Turno.fecha==fecha_).all()
   results = turnos_schema.dump(tur)
-  print ("Tur results###",tur,'###',results)
   return jsonify(results)
 
 
