@@ -105,8 +105,6 @@ def del_turno(t_id):
 @api.route('/turno_empleado/<int:t_id>', methods=['GET'])
 def get_turno_empleado(t_id):
   empl = Empleado.query.get_or_404(t_id)
-  # tur = Turno.query.filter(Turno.empleado_id==t_id).all()
-  # results = turnos_schema.dump(tur)
   results = {
     'empleado':empleado_schema.dump(empl),
     'turnos':turnos_schema.dump(empl.turnos),
